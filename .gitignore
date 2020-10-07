@@ -1,0 +1,7 @@
+venv/
+selenium_data/
+.idea/
+work_log.*
+credentials
+__pycache__/
+geckodriver.log
