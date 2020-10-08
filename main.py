@@ -7,7 +7,9 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class Logger:
@@ -39,7 +41,6 @@ class SchoolHandler:
     def __init__(self, logger_instance):
         chrome_options = Options()
         chrome_options.add_argument("user-data-dir=selenium_data")
-        from webdriver_manager.chrome import ChromeDriverManager
         self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.logger = logger_instance
 
@@ -146,9 +147,50 @@ class SchoolHandler:
     def get_to_achievement_page(self, page_link):
         self.driver.get(page_link)
 
-    def add_achievement(self, achievement_name, event_type, event_level, achievement_class, event_result, event_proof):
+    def add_achievement(self, achievement_name, event_type, event_level, achievement_area, event_date, event_result,
+                        event_proof):
+        # open modal
         options_btn = WebDriverWait(self.driver, 5).until(expected_conditions.element_to_be_clickable(
             (By.LINK_TEXT, "Добавить достижение")))
+        options_btn.click()
+
+        # result
+        name_input = WebDriverWait(self.driver, 5).until(expected_conditions.presence_of_element_located(
+            (By.ID, "achName")))
+        name_input.send_keys(achievement_name)
+
+        # event_type
+        select = Select(self.driver.find_element_by_id('achType'))
+        select.select_by_visible_text(event_type)
+
+        # event_level
+        select = Select(self.driver.find_element_by_id('achLevel'))
+        select.select_by_visible_text(event_level)
+
+        # achievement_area
+        # TODO fix that damn input
+        select = Select(self.driver.find_element_by_name('achArea'))
+        select.select_by_visible_text(achievement_area)
+
+        # event_date
+        result_input = WebDriverWait(self.driver, 5).until(expected_conditions.presence_of_element_located(
+            (By.ID, "achievementdate")))
+        result_input.send_keys(event_date)
+
+        # event_result
+        result_input = WebDriverWait(self.driver, 5).until(expected_conditions.presence_of_element_located(
+            (By.ID, "achResult")))
+        result_input.send_keys(event_result)
+
+        # event_proof
+        result_input = WebDriverWait(self.driver, 5).until(expected_conditions.presence_of_element_located(
+            (By.ID, "achDoc")))
+        result_input.send_keys(event_proof)
+
+        # close modal
+        # TODO CHange to Сохранить
+        options_btn = WebDriverWait(self.driver, 5).until(expected_conditions.element_to_be_clickable(
+            (By.LINK_TEXT, "Отмена")))
         options_btn.click()
 
     def quit(self):
@@ -171,9 +213,10 @@ if __name__ == '__main__':
                 achievement_name=row[2],
                 event_type=row[3],
                 event_level=row[4],
-                achievement_class=row[5],
-                event_result=row[6],
-                event_proof=row[7],
+                achievement_area=row[5],
+                event_date=row[6],
+                event_result=row[7],
+                event_proof=row[8],
             )
             print(row)
 
