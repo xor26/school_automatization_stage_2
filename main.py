@@ -163,12 +163,15 @@ class SchoolHandler:
         select = Select(self.driver.find_element_by_id('achType'))
         select.select_by_visible_text(event_type)
 
-        # event_level
+        # event_levelСего
         select = Select(self.driver.find_element_by_id('achLevel'))
         select.select_by_visible_text(event_level)
 
         # achievement_area
         # TODO fix that damn input
+        achievementdate_input = WebDriverWait(self.driver, 5).until(expected_conditions.presence_of_element_located(
+            (By.CLASS_NAME, "multiselect__fake-input-field")))
+        achievementdate_input.click()
         select = Select(self.driver.find_element_by_name('achArea'))
         select.select_by_visible_text(achievement_area)
 
@@ -206,7 +209,7 @@ if __name__ == '__main__':
         school_handler.login_sequence(credential_data["login"], credential_data["password"])
 
     with open('to_do_list.csv', newline='') as csv_file:
-        reader = csv.reader(csv_file, delimiter=',', quotechar='|')
+        reader = csv.reader(csv_file, delimiter='|', quotechar='|')
         for row in reader:
             school_handler.get_to_achievement_page(page_link=row[1])
             school_handler.add_achievement(
